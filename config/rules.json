@@ -1,0 +1,786 @@
+{
+  "message_type": "MT700",
+  "source": "SWIFT Category 7 Message Reference Guide, Standards MT November 2025",
+  "scope": "Issue of a Documentary Credit (Sender = Issuing Bank, Receiver = Advising Bank)",
+  "tags": [
+    {
+      "tag": "27",
+      "field_no": 1,
+      "field_name": "Sequence of Total",
+      "verified": true,
+      "format": {
+        "raw": "1!n/1!n",
+        "subfield_labels": ["Number", "Total"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the number of this message in the series of messages sent for a documentary credit, and the total number of messages in the series.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Number must have the fixed value of 1 and Total must have a value in the range 1 to 8.", "error_code": "T75"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "40A",
+      "field_no": 2,
+      "field_name": "Form of Documentary Credit",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "24x",
+        "subfield_labels": ["Type"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the type of credit.",
+      "codes": [
+        {"code": "IRREVOCABLE", "meaning": "The documentary credit is irrevocable"},
+        {"code": "IRREVOCABLE TRANSFERABLE", "meaning": "The documentary credit is irrevocable and transferable"}
+      ],
+      "network_validated_rules": [
+        {"text": "Type must contain one of the codes listed above.", "error_code": "T60"}
+      ],
+      "usage_rules": [
+        {"text": "Details of any special conditions applying to the transferability of the credit and/or the bank authorised to transfer the credit in a freely negotiable credit should be included in field 47A Additional Conditions.", "depends_on": ["47A"], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "20",
+      "field_no": 3,
+      "field_name": "Documentary Credit Number",
+      "verified": true,
+      "format": {
+        "raw": "16x",
+        "subfield_labels": null
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the documentary credit number which has been assigned by the Sender.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "This field must not start or end with a slash '/' and must not contain two consecutive slashes '//'.", "error_code": "T26"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "23",
+      "field_no": 4,
+      "field_name": "Reference to Pre-Advice",
+      "verified": false,
+      "verification_note": "Format/Presence confirmed from the MT700 Format Specifications table (16x, Optional). No NVR or Usage Rules section was located for this field under MT700's own Field Specifications despite multiple searches. Definition text below is not a directly-quoted MT700 sentence and should be re-checked against the PDF page (~p.18) before being treated as authoritative.",
+      "format": {
+        "raw": "16x",
+        "subfield_labels": null
+      },
+      "presence": "Optional",
+      "definition": "This field contains the reference to a related pre-advice, if a pre-advice was sent for this documentary credit.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "31C",
+      "field_no": 5,
+      "field_name": "Date of Issue",
+      "verified": true,
+      "format": {
+        "option": "C",
+        "raw": "6!n",
+        "subfield_labels": ["Date"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the date on which the issuing bank considers the documentary credit as being issued.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Date must be a valid date expressed as YYMMDD.", "error_code": "T50"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "40E",
+      "field_no": 6,
+      "field_name": "Applicable Rules",
+      "verified": true,
+      "format": {
+        "option": "E",
+        "raw": "30x[/35x]",
+        "subfield_labels": ["Applicable Rules", "Narrative"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the rules the credit is subject to.",
+      "codes": [
+        {"code": "UCP LATEST VERSION", "meaning": "Subject to the ICC UCP version in effect on date of issue."},
+        {"code": "UCPURR LATEST VERSION", "meaning": "Subject to UCP + Uniform Rules for Bank-to-Bank Reimbursements, both in effect on date of issue."},
+        {"code": "EUCP LATEST VERSION", "meaning": "Subject to the eUCP Supplement (electronic presentations), in effect on date of issue."},
+        {"code": "EUCPURR LATEST VERSION", "meaning": "Subject to eUCP + URR, both in effect on date of issue."},
+        {"code": "OTHR", "meaning": "Subject to another set of rules, or not subject to the version in effect on date of issue - these must be specified in Narrative (2nd subfield)."}
+      ],
+      "network_validated_rules": [
+        {"text": "Applicable Rules code must be one of the codes listed above.", "error_code": "T59"},
+        {"text": "Narrative is only allowed if Applicable Rules is OTHR.", "error_code": "D81"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "31D",
+      "field_no": 7,
+      "field_name": "Date and Place of Expiry",
+      "verified": true,
+      "format": {
+        "option": "D",
+        "raw": "6!n29x",
+        "subfield_labels": ["Date", "Place"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the latest date for presentation under the documentary credit and the place where documents may be presented.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Date must be a valid date expressed as YYMMDD.", "error_code": "T50"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "51a",
+      "field_no": 8,
+      "field_name": "Applicant Bank",
+      "verified": true,
+      "format": {
+        "options": [
+          {"option": "A", "raw": "[/1!a][/34x] 4!a2!a2!c[3!c]", "subfield_labels": ["Party Identifier", "Identifier Code"]},
+          {"option": "D", "raw": "[/1!a][/34x] 4*35x", "subfield_labels": ["Party Identifier", "Name and Address"]}
+        ]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the bank of the applicant customer, if different from the issuing bank.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "50",
+      "field_no": 9,
+      "field_name": "Applicant",
+      "verified": true,
+      "format": {
+        "raw": "4*35x",
+        "subfield_labels": null
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the party on behalf of whom the documentary credit is issued.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "59",
+      "field_no": 10,
+      "field_name": "Beneficiary",
+      "verified": true,
+      "format": {
+        "raw": "[/34x]<crlf>4*35x",
+        "subfield_labels": ["Account", "Name and Address"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field specifies the party in favour of whom the documentary credit is issued.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "32B",
+      "field_no": 11,
+      "field_name": "Currency Code, Amount",
+      "verified": true,
+      "format": {
+        "option": "B",
+        "raw": "3!a15d",
+        "subfield_labels": ["Currency", "Amount"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field contains the currency code and amount of the documentary credit.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Currency must be a valid ISO 4217 currency code.", "error_code": "T52"},
+        {"text": "The integer part of Amount must contain at least one digit. The decimal comma ',' is mandatory and is included in the maximum length. The number of digits following the comma must not exceed the maximum number allowed for the specified currency.", "error_code": "C03, T40, T43"}
+      ],
+      "usage_rules": [
+        {"text": "Special information relative to the amount of the credit must be specified in field 39A Percentage Credit Amount Tolerance or field 39C Additional Amounts Covered.", "depends_on": ["39A", "39C"], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "39A",
+      "field_no": 12,
+      "field_name": "Percentage Credit Amount Tolerance",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "2n/2n",
+        "subfield_labels": ["Tolerance 1", "Tolerance 2"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the tolerance relative to the documentary credit amount as a percentage plus and/or minus that amount.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "Tolerance 1 specifies a positive tolerance, the Tolerance 2 specifies a negative tolerance.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "39C",
+      "field_no": 13,
+      "field_name": "Additional Amounts Covered",
+      "verified": true,
+      "format": {
+        "option": "C",
+        "raw": "4*35x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies any additional amounts available to the beneficiary under the terms of the credit, such as insurance, freight, interest, etc.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "41a",
+      "field_no": 14,
+      "field_name": "Available With ... By ...",
+      "verified": true,
+      "format": {
+        "options": [
+          {"option": "A", "raw": "4!a2!a2!c[3!c] / 14x", "subfield_labels": ["Identifier Code", "Code"]},
+          {"option": "D", "raw": "4*35x / 14x", "subfield_labels": ["Name and Address", "Code"]}
+        ]
+      },
+      "presence": "Mandatory",
+      "definition": "This field identifies the bank with which the credit is available (the place for presentation) and an indication of how the credit is available.",
+      "codes": [
+        {"code": "BY ACCEPTANCE", "meaning": null},
+        {"code": "BY DEF PAYMENT", "meaning": null},
+        {"code": "BY MIXED PYMT", "meaning": null},
+        {"code": "BY NEGOTIATION", "meaning": null},
+        {"code": "BY PAYMENT", "meaning": null}
+      ],
+      "network_validated_rules": [
+        {"text": "In option A or D, Code must contain one of the codes listed above.", "error_code": "T68"},
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": [
+        {"text": "For credits subject to eUCP: if presentation of both electronic records and paper documents is allowed, the place for presentation of the electronic records as well as the place for presentation of the paper documents must be specified in field 47A and not in this field.", "depends_on": ["47A"], "confidence": "confirmed"},
+        {"text": "For credits subject to eUCP: if presentation of only electronic records is allowed, the place for presentation of the electronic records must be specified in field 47A and not in this field.", "depends_on": ["47A"], "confidence": "confirmed"},
+        {"text": "If the credit is to be freely negotiable by any bank, option D must be used with the phrase 'Any bank in ... (city or country)'. If freely negotiable anywhere in the world, an indication of country is not required.", "depends_on": [], "confidence": "confirmed"},
+        {"text": "When Code contains either BY DEF PAYMENT or BY MIXED PYMT, the specific details of the payment terms must be specified in fields 42P and 42M respectively.", "depends_on": ["42P", "42M"], "confidence": "confirmed"},
+        {"text": "When Code contains BY PAYMENT, this should be understood to mean payment at sight.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "42C",
+      "field_no": 15,
+      "field_name": "Drafts at ...",
+      "verified": true,
+      "format": {
+        "option": "C",
+        "raw": "3*35x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Conditional (see rules C1 and C2)",
+      "definition": "This field specifies the tenor of drafts to be drawn under the documentary credit.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "42a",
+      "field_no": 16,
+      "field_name": "Drawee",
+      "verified": true,
+      "format": {
+        "options": [
+          {"option": "A", "raw": "[/1!a][/34x] 4!a2!a2!c[3!c]", "subfield_labels": ["Party Identifier", "Identifier Code"]},
+          {"option": "D", "raw": "[/1!a][/34x] 4*35x", "subfield_labels": ["Party Identifier", "Name and Address"]}
+        ]
+      },
+      "presence": "Conditional (see rules C1 and C2)",
+      "definition": "This field identifies the drawee of the drafts to be drawn under the documentary credit.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": [
+        {"text": "The drawee must be a bank. If drafts on the applicant are required, they are to be listed as documents in field 46A.", "depends_on": ["46A"], "confidence": "confirmed"},
+        {"text": "The Party Identifier must not be present.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "42M",
+      "field_no": 17,
+      "field_name": "Mixed Payment Details",
+      "verified": true,
+      "format": {
+        "option": "M",
+        "raw": "4*35x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Conditional (see rule C2)",
+      "definition": "This field specifies the payment dates, amounts and/or method for their determination in a documentary credit which is available by mixed payment.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "42P",
+      "field_no": 18,
+      "field_name": "Negotiation/Deferred Payment Details",
+      "verified": true,
+      "format": {
+        "option": "P",
+        "raw": "4*35x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Conditional (see rule C2)",
+      "definition": "This field specifies the payment date or method for its determination in a documentary credit which is available by deferred payment or negotiation only.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "43P",
+      "field_no": 19,
+      "field_name": "Partial Shipments",
+      "verified": true,
+      "format": {
+        "option": "P",
+        "raw": "11x",
+        "subfield_labels": ["Code"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies whether or not partial shipments are allowed under the documentary credit.",
+      "codes": [
+        {"code": "ALLOWED", "meaning": "Allowed under the documentary credit."},
+        {"code": "CONDITIONAL", "meaning": "Conditional based on conditions specified elsewhere in the message."},
+        {"code": "NOT ALLOWED", "meaning": "Not allowed under the documentary credit."}
+      ],
+      "network_validated_rules": [
+        {"text": "Code must contain one of the codes listed above.", "error_code": "T64"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "43T",
+      "field_no": 20,
+      "field_name": "Transhipment",
+      "verified": true,
+      "format": {
+        "option": "T",
+        "raw": "11x",
+        "subfield_labels": ["Code"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies whether or not transhipment is allowed under the documentary credit.",
+      "codes": [
+        {"code": "ALLOWED", "meaning": "Allowed under the documentary credit."},
+        {"code": "CONDITIONAL", "meaning": "Conditional based on conditions specified elsewhere in the message."},
+        {"code": "NOT ALLOWED", "meaning": "Not allowed under the documentary credit."}
+      ],
+      "network_validated_rules": [
+        {"text": "Code must contain one of the codes listed above.", "error_code": "T65"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "44A",
+      "field_no": 21,
+      "field_name": "Place of Taking in Charge/Dispatch from .../Place of Receipt",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "140z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the place of taking in charge (in case of a multimodal transport document), the place of receipt (in case of a road, rail or inland waterway transport document or a courier or expedited delivery service document), the place of dispatch or the place of shipment to be indicated on the transport document.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "44E",
+      "field_no": 22,
+      "field_name": "Port of Loading/Airport of Departure",
+      "verified": true,
+      "format": {
+        "option": "E",
+        "raw": "140z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the port of loading or airport of departure to be indicated on the transport document.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "44F",
+      "field_no": 23,
+      "field_name": "Port of Discharge/Airport of Destination",
+      "verified": true,
+      "format": {
+        "option": "F",
+        "raw": "140z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the port of discharge or airport of destination to be indicated on the transport document.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "44B",
+      "field_no": 24,
+      "field_name": "Place of Final Destination/For Transportation to .../Place of Delivery",
+      "verified": true,
+      "format": {
+        "option": "B",
+        "raw": "140z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the final destination or place of delivery to be indicated on the transport document.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "44C",
+      "field_no": 25,
+      "field_name": "Latest Date of Shipment",
+      "verified": true,
+      "format": {
+        "option": "C",
+        "raw": "6!n",
+        "subfield_labels": ["Date"]
+      },
+      "presence": "Conditional (see rule C3)",
+      "definition": "This field specifies the latest date for loading on board/dispatch/taking in charge.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Date must be a valid date expressed as YYMMDD.", "error_code": "T50"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "44D",
+      "field_no": 26,
+      "field_name": "Shipment Period",
+      "verified": true,
+      "format": {
+        "option": "D",
+        "raw": "6*65x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Conditional (see rule C3)",
+      "definition": "This field specifies the period of time during which the goods are to be loaded on board/despatched/taken in charge.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "45A",
+      "field_no": 27,
+      "field_name": "Description of Goods and/or Services",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "100*65z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field contains a description of the goods and/or services.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "Terms such as FOB, CIF, etc. should be specified in this field.", "depends_on": [], "confidence": "confirmed"},
+        {"text": "The specification of each new item should begin on a new line, preceded by the sign '+' or numbered using +1), +2), etc.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "46A",
+      "field_no": 28,
+      "field_name": "Documents Required",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "100*65z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field contains a description of any documents required.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "When the ultimate date of issue of a transport document is specified, it is to be specified with the relative document in this field.", "depends_on": [], "confidence": "confirmed"},
+        {"text": "For credits subject to eUCP, the format in which electronic records are to be presented must be specified in this field.", "depends_on": ["40E"], "confidence": "implied"},
+        {"text": "The specification of each new item should begin on a new line, preceded by the sign '+' or numbered using +1), +2), etc.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "47A",
+      "field_no": 29,
+      "field_name": "Additional Conditions",
+      "verified": true,
+      "format": {
+        "option": "A",
+        "raw": "100*65z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field contains a description of further conditions of the documentary credit.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "For credits subject to eUCP, where applicable, the place for presentation of electronic records (and paper documents, if both are allowed) must be specified in this field.", "depends_on": ["40E", "41a"], "confidence": "implied"},
+        {"text": "The specification of each new item should begin on a new line, preceded by the sign '+' or numbered using +1), +2), etc.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "49G",
+      "field_no": 30,
+      "field_name": "Special Payment Conditions for Beneficiary",
+      "verified": false,
+      "verification_note": "Format/Presence confirmed from MT700 table (100*65z, Optional). Definition text below is taken from the identically-worded field in a sibling message type (MT721), not a directly-quoted MT700-specific sentence. Recommend confirming against MT700 PDF page (~p.29) before treating as authoritative.",
+      "format": {
+        "option": "G",
+        "raw": "100*65z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies special payment conditions applicable to the beneficiary, for example, post-financing request/conditions.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "49H",
+      "field_no": 31,
+      "field_name": "Special Payment Conditions for Bank Only",
+      "verified": true,
+      "format": {
+        "option": "H",
+        "raw": "100*65z",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies special payment conditions applicable to a bank without disclosure to the beneficiary, for example, post-financing request/conditions. Content of the field must specify to which bank it is addressed.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": []
+    },
+    {
+      "tag": "71D",
+      "field_no": 32,
+      "field_name": "Charges",
+      "verified": true,
+      "format": {
+        "option": "D",
+        "raw": "6*35z",
+        "subfield_labels": ["Narrative"],
+        "structured_line_format": {
+          "line_1": "/8a/[3!a13d][additional information]  (Code)(Currency)(Amount)(Narrative)",
+          "lines_2_6": "[/8a/[3!a13d][additional information]] or [//continuation] or (Narrative)"
+        }
+      },
+      "presence": "Optional",
+      "definition": "This field may be used only to specify charges to be borne by the beneficiary.",
+      "codes": [
+        {"code": "AGENT", "meaning": "Agent's Commission"},
+        {"code": "COMM", "meaning": "Our Commission"},
+        {"code": "CORCOM", "meaning": "Our Correspondent's Commission"},
+        {"code": "DISC", "meaning": "Commercial Discount"},
+        {"code": "INSUR", "meaning": "Insurance Premium"},
+        {"code": "POST", "meaning": "Our Postage"},
+        {"code": "STAMP", "meaning": "Stamp Duty"},
+        {"code": "TELECHAR", "meaning": "Teletransmission Charges"},
+        {"code": "WAREHOUS", "meaning": "Wharfing and Warehouse"}
+      ],
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "In the absence of this field, all charges, except negotiation and transfer charges, are to be borne by the applicant.", "depends_on": [], "confidence": "confirmed", "note": "References 'the applicant' by role, not field 50 by number."},
+        {"text": "Any code used in this field must be between slashes and must appear at the beginning of a line.", "depends_on": [], "confidence": "confirmed"},
+        {"text": "Narrative text must not begin with a slash and, if used, must begin on a new line and be the last information in the field.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "48",
+      "field_no": 33,
+      "field_name": "Period for Presentation in Days",
+      "verified": true,
+      "format": {
+        "raw": "3n[/35x]",
+        "subfield_labels": ["Days", "Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the number of calendar days after the date of shipment within which the documents must be presented for payment, acceptance, or negotiation. Narrative must only be used to specify another type of date than a shipment date, for example invoice date, from which the period for presentation begins.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "The absence of this field means that the presentation period is 21 days after the date of shipment, where applicable.", "depends_on": ["44C", "44D"], "confidence": "implied", "note": "References 'the date of shipment' by role, not field 44C/44D by number."}
+      ]
+    },
+    {
+      "tag": "49",
+      "field_no": 34,
+      "field_name": "Confirmation Instructions",
+      "verified": true,
+      "format": {
+        "raw": "7!x",
+        "subfield_labels": ["Instruction"]
+      },
+      "presence": "Mandatory",
+      "definition": "This field contains confirmation instructions for the requested confirmation party.",
+      "codes": [
+        {"code": "CONFIRM", "meaning": "The requested confirmation party is requested to confirm the credit"},
+        {"code": "MAY ADD", "meaning": "The requested confirmation party may add its confirmation to the credit"},
+        {"code": "WITHOUT", "meaning": "No confirmation is requested"}
+      ],
+      "network_validated_rules": [
+        {"text": "Instruction must contain one of the codes listed above.", "error_code": "T67"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "58a",
+      "field_no": 35,
+      "field_name": "Requested Confirmation Party",
+      "verified": true,
+      "format": {
+        "options": [
+          {"option": "A", "raw": "[/1!a][/34x] 4!a2!a2!c[3!c]", "subfield_labels": ["Party Identifier", "Identifier Code"]},
+          {"option": "D", "raw": "[/1!a][/34x] 4*35x", "subfield_labels": ["Party Identifier", "Name and Address"]}
+        ]
+      },
+      "presence": "Optional",
+      "definition": "Bank which is requested to add its confirmation or may add its confirmation.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations, and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": [
+        {"text": "Field must be present if confirmation instructions is MAY ADD or CONFIRM.", "depends_on": ["49"], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "53a",
+      "field_no": 36,
+      "field_name": "Reimbursing Bank",
+      "verified": true,
+      "verification_note": "Usage Rule text and NVR error codes confirmed directly for MT700. Full Option A/D format subfield breakdown inferred by structural consistency with sibling party fields (51a/58a); not independently re-quoted for 53a specifically in the retrieved excerpts.",
+      "format": {
+        "options": [
+          {"option": "A", "raw": "[/1!a][/34x] 4!a2!a2!c[3!c]", "subfield_labels": ["Party Identifier", "Identifier Code"]},
+          {"option": "D", "raw": "[/1!a][/34x] 4*35x", "subfield_labels": ["Party Identifier", "Name and Address"]}
+        ]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies the bank authorised to reimburse the paying, accepting or negotiating bank.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": [
+        {"text": "With the exception of a credit valid for negotiation, if there is a single direct account relationship, in the currency of the credit, between the Sender and the Receiver, the absence of field 53a means that this account relationship will be used for reimbursement.", "depends_on": ["32B"], "confidence": "implied", "note": "References 'the currency of the credit' by role, not field 32B by number."}
+      ]
+    },
+    {
+      "tag": "78",
+      "field_no": 37,
+      "field_name": "Instructions to the Paying/Accepting/Negotiating Bank",
+      "verified": true,
+      "format": {
+        "raw": "12*65x",
+        "subfield_labels": ["Narrative"]
+      },
+      "presence": "Optional",
+      "definition": "This field specifies instructions to the paying, accepting or negotiating bank. It may also indicate if pre-notification of a reimbursement claim or pre-debit notification to the issuing bank is required.",
+      "codes": null,
+      "network_validated_rules": [],
+      "usage_rules": [
+        {"text": "When used to indicate pre-notification of a reimbursement claim or pre-debit notification to the issuing bank is required, the number and type of days, that is, banking or calendar days, within which the issuing bank has to be notified should also be indicated.", "depends_on": [], "confidence": "confirmed"}
+      ]
+    },
+    {
+      "tag": "57a",
+      "field_no": 38,
+      "field_name": "'Advise Through' Bank",
+      "verified": true,
+      "format": {
+        "options": [
+          {"option": "A", "raw": "[/1!a][/34x] 4!a2!a2!c[3!c]", "subfield_labels": ["Party Identifier", "Identifier Code"]},
+          {"option": "B", "raw": "[/1!a][/34x] [35x]", "subfield_labels": ["Party Identifier", "Location"]},
+          {"option": "D", "raw": "[/1!a][/34x] 4*35x", "subfield_labels": ["Party Identifier", "Name and Address"]}
+        ]
+      },
+      "presence": "Optional",
+      "definition": "This field identifies the bank, if different from the Receiver, through which the documentary credit is to be advised/confirmed to the beneficiary.",
+      "codes": null,
+      "network_validated_rules": [
+        {"text": "Identifier Code must be a registered financial institution BIC.", "error_code": "T27, T28, T29, T45"},
+        {"text": "Identifier Code must be a financial institution BIC. This error code applies to all types of BICs referenced in a FIN message including connected BICs, non-connected BICs, Masters, Synonyms, Live destinations and Test & Training destinations.", "error_code": "C05"}
+      ],
+      "usage_rules": []
+    },
+    {
+      "tag": "72Z",
+      "field_no": 39,
+      "field_name": "Sender to Receiver Information",
+      "verified": true,
+      "format": {
+        "option": "Z",
+        "raw": "6*35z",
+        "subfield_labels": ["Narrative"],
+        "structured_line_format": {
+          "line_1": "/8c/[additional information]  (Code)(Narrative)",
+          "lines_2_6": "[/8c/[additional information]] or [//continuation of additional information] or (Narrative)"
+        }
+      },
+      "presence": "Optional",
+      "definition": "This field specifies additional information for the Receiver.",
+      "codes": [
+        {"code": "PHONBEN", "meaning": "Please advise/contact the beneficiary by phone."},
+        {"code": "TELEBEN", "meaning": "Please advise the beneficiary by the most efficient means of telecommunication."}
+      ],
+      "network_validated_rules": [],
+      "usage_rules": []
+    }
+  ],
+  "message_level_network_validated_rules": [
+    {
+      "rule_id": "C1",
+      "text": "When used, fields 42C and 42a must both be present.",
+      "error_code": "C90",
+      "tags_involved": ["42C", "42a"],
+      "dependency_type": "co_presence"
+    },
+    {
+      "rule_id": "C2",
+      "text": "Either fields 42C and 42a together, or field 42M alone, or field 42P alone may be present. No other combination of these fields is allowed.",
+      "error_code": "C90",
+      "tags_involved": ["42C", "42a", "42M", "42P"],
+      "dependency_type": "mutual_exclusion_grouped",
+      "groups": [["42C", "42a"], ["42M"], ["42P"]],
+      "note": "C1 governs internal co-presence of the first group; evaluate C1 before C2."
+    },
+    {
+      "rule_id": "C3",
+      "text": "Either field 44C or 44D, but not both, may be present.",
+      "error_code": "D06",
+      "tags_involved": ["44C", "44D"],
+      "dependency_type": "mutual_exclusion"
+    }
+  ]
+}

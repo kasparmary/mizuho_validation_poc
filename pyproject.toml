@@ -1,0 +1,11 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --alluredir=reports/allure-results --clean-alluredir"
+
+[project]
+name = "Mizuho-validation-poc"
+version = "0.1.0"
+description = "MT700 validation POC — presence, sequence, duplicate/identifier, and content checks"
+requires-python = ">=3.10"

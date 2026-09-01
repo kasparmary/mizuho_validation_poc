@@ -1,0 +1,8 @@
+docs/
+.venv/
+.pytest_cache/
+src/__pycache__/
+src/validators/__pycache__/
+test/__pycache__/
+utils/__pycache__/
+reports/
