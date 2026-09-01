@@ -24,6 +24,24 @@ C1 (42C/42a co-presence), C2 (42C+42a / 42M / 42P mutual exclusion), and C3
 that need the full extracted_tags list at once, not a per-tag value check.
 See src/validators/cross_field_validator.py, which evaluates rules.json's
 `message_level_network_validated_rules` generically.
+
+NOT YET BUILT — extending to a second SWIFT message type (e.g. MT730): most
+tag numbers are reused across message types with identical rules, so the
+`_CHECKS` dict below should stay the default/shared case. Only where a tag's
+rule genuinely differs by message type would this need an override layer,
+e.g.:
+
+    _CHECKS_OVERRIDES = {"MT730": {"20": _check_20_mt730}}
+
+    def _get_check_fn(canonical_tag, message_type):
+        return _CHECKS_OVERRIDES.get(message_type, {}).get(canonical_tag) \
+            or _CHECKS.get(canonical_tag)
+
+`rules.json` already carries `message_type` at the top level, so `check()`'s
+external signature (`check(extracted_tags, rules, logger)`) would not need
+to change to support this — only this module's internals would. Existing
+`_check_*()` functions and the shared `_CHECKS` table stay untouched for
+every tag whose rule doesn't actually diverge.
 """
 
 import logging
