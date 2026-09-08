@@ -8,10 +8,11 @@ Design decisions (each one deliberate, not incidental):
 2. Multi-line continuation values (e.g. field 41a's second subfield line
    "BY NEGOTIATION" following ":41A:MHCBJPJTXXX") are joined into the PREVIOUS
    tag's value with '\\n', not treated as new tags or dropped.
-3. Blank / whitespace-only lines are skipped entirely — they are neither a new
-   tag nor content to append to the previous tag's value. This is what makes a
-   trailing blank line harmless (TC015) without silently corrupting the last
-   tag's value with an extra blank continuation line.
+3. Blank / whitespace-only lines are skipped as far as tag EXTRACTION goes —
+   they are neither a new tag nor content to append to the previous tag's
+   value, so a trailing blank line (TC013) never corrupts the last tag's
+   value with an extra blank continuation line. A blank line strictly
+   BETWEEN two tags is still structurally anomalous, though (see #6 below).
 4. Tag identifiers are captured in their RAW form (preserving case) so that a
    downstream structural check can flag non-uppercase tags (TC016) — the raw
    form is not silently upper-cased here, because that would hide the very
@@ -20,10 +21,16 @@ Design decisions (each one deliberate, not incidental):
    key "41a" for option-generic fields) happens here once, so every downstream
    validator can rely on `canonical_tag` for rules.json lookups without each
    one re-implementing the same mapping.
+6. `extract()` also returns `structural_errors`: text before the first
+   recognized tag, and blank lines that fall between tags rather than
+   trailing at end of file, are both collected here (where the line-number
+   context naturally lives) and surfaced by tag_identifier_validator's
+   stage in engine.py — they're file-level structural anomalies, not
+   properties of any single tag.
 """
 
 import re
-from typing import List
+from typing import List, Tuple
 from src.models import ExtractedTag
 
 # Field numbers that are genuinely multi-option on the wire (concrete letter varies
@@ -65,21 +72,45 @@ def _to_canonical(raw_tag: str) -> str:
     return raw_tag.upper() if letter else raw_tag
 
 
-def extract(raw_text: str) -> List[ExtractedTag]:
+def extract(raw_text: str) -> Tuple[List[ExtractedTag], List[str]]:
     """
     Parse raw MT700 Block 4 text (as read from a .txt file) into an ordered
     list of ExtractedTag. Handles both CRLF and LF line endings uniformly.
+
+    Returns (tags, structural_errors) — structural_errors covers file-level
+    anomalies that aren't about any single tag: text before the first
+    recognized tag, and blank lines that fall between tags rather than
+    trailing at end of file (a trailing blank line, e.g. TC013, is harmless
+    and NOT reported here).
     """
     # Normalize line endings so CRLF and LF files parse identically —
     # confirmed necessary since the real sample file uses CRLF throughout.
     lines = raw_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
 
+    # Index of the last non-blank line, so a blank line's position can be
+    # classified as "trailing" (nothing but blanks follow) vs "mid-message"
+    # (real content still follows) without needing look-ahead in the main loop.
+    last_content_idx = -1
+    for i, line in enumerate(lines):
+        if line.strip() != "":
+            last_content_idx = i
+
     tags: List[ExtractedTag] = []
+    structural_errors: List[str] = []
     current: ExtractedTag = None
 
     for line_no, line in enumerate(lines, start=1):
+        idx = line_no - 1
         if line.strip() == "":
-            # Blank line: skip entirely (decision #3 above).
+            # Blank line: never extracted as tag content (decision #3 above),
+            # but flag it if it falls strictly between tags rather than
+            # trailing at end of file — standard SWIFT Block 4 does not
+            # permit blank lines within the message body.
+            if current is not None and idx < last_content_idx:
+                structural_errors.append(
+                    f"Blank line at line {line_no} appears between tags, not "
+                    f"just trailing at end of file — not permitted in SWIFT Block 4."
+                )
             continue
 
         match = _TAG_LINE_RE.match(line)
@@ -96,9 +127,12 @@ def extract(raw_text: str) -> List[ExtractedTag]:
             # Continuation line: append to the previous tag's value.
             if current is not None:
                 current.value = current.value + "\n" + line
-            # If there is no current tag yet, this is stray content before any
-            # tag — silently dropped here; a stricter engine could flag this as
-            # a separate structural error, but no test scenario in this batch
-            # exercises that case, so it's left as a documented non-issue.
+            else:
+                # Stray content before the first tag — a corrupted or
+                # tampered file, not silently ignorable.
+                structural_errors.append(
+                    f"Line {line_no} ('{line}') appears before the first recognized "
+                    f"tag and is not valid Block 4 content."
+                )
 
-    return tags
+    return tags, structural_errors

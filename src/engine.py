@@ -11,6 +11,12 @@ and sequence_validator excludes unrecognized tags from its own comparison
 order" — so the unrecognized-tag diagnosis should surface first, not get
 buried behind a second, less accurate error about the same root cause.
 
+extract() also returns file-level structural_errors (pre-tag content,
+mid-message blank lines) that aren't about any single tag — these are
+folded into the tag identifier stage's result here, since that's already
+the "structural legitimacy of the file" stage, rather than giving them a
+separate pipeline stage of their own.
+
 Runs all five checks regardless of earlier failures (rather than stopping at
 the first one) so a single test run surfaces every problem in the file at
 once — matching the soft-assertion, full-picture reporting approach
@@ -32,7 +38,7 @@ from src.validators import (
 )
 
 
-def load_rules(rules_path: str = "config/rules.json") -> dict:
+def load_rules(rules_path: str = "config/MT700/rules.json") -> dict:
     with open(rules_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -46,13 +52,18 @@ def validate(file_path: str, rules: dict, logger: logging.Logger = None) -> Vali
     with open(file_path, "r", encoding="utf-8") as f:
         raw_text = f.read()
 
-    extracted_tags = extract(raw_text)
+    extracted_tags, structural_errors = extract(raw_text)
 
     logger.info("--- Stage 1: Presence check ---")
     presence_result = presence_validator.check(extracted_tags, rules, logger)
 
     logger.info("--- Stage 2: Tag identifier check ---")
     tag_identifier_result = tag_identifier_validator.check(extracted_tags, rules, logger)
+    if structural_errors:
+        for msg in structural_errors:
+            logger.error(msg)
+        tag_identifier_result.errors.extend(structural_errors)
+        tag_identifier_result.valid = False
 
     logger.info("--- Stage 3: Sequence check ---")
     sequence_result = sequence_validator.check(extracted_tags, rules, logger)

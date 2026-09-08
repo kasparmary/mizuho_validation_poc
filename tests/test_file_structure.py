@@ -1,13 +1,18 @@
 """
-MT700 validation test suite — TC001 through TC033.
+Validation test suite for the active message type (see
+utils.message_type_config — MT_TARGET env var, or config/message_types.json's
+"default").
 
 One parametrized test function drives every scenario: each points at an input
 file and an expected outcome, so the test logic itself never varies — only
 the input file and expected outcome do (this is the "script agnostic, data
-configurable" shape applied at the test level). Scenarios cover both file
-structure (presence/sequence/duplicate-identifier) and field content
-(format/codes/NVR on tag values) since engine.validate() runs all four
-checks in one pass against every file.
+configurable" shape applied at the test level). Scenarios cover file
+structure (presence/sequence/tag identifier), field content (format/codes/
+NVR on tag values), and cross-field rules, since engine.validate() runs all
+five checks in one pass against every file. This test function has no
+message-type-specific logic anywhere — which tags/rules/fixtures apply is
+entirely a property of the `rules` fixture and `DATA_DIR`, both resolved
+from the registry, not this file.
 
 Each test attaches, as Allure evidence:
   1. The execution log (via the `test_logger` fixture, attached in conftest.py)
@@ -20,16 +25,15 @@ import allure
 import pytest
 
 from src.engine import validate
-from utils.expected_results import FILE_STRUCTURE_SCENARIOS
+from utils.expected_results import FILE_STRUCTURE_SCENARIOS, ACTIVE_MESSAGE_TYPE
 
-DATA_DIR = "data/file_structure"
+DATA_DIR = ACTIVE_MESSAGE_TYPE.data_dir
 
 
 def _scenario_id(scenario):
     return f"{scenario.test_id}_{scenario.file_name}"
 
 
-@allure.epic("MT700 Validation")
 @allure.feature("File Structure Validation")
 @pytest.mark.parametrize(
     "scenario",
@@ -37,6 +41,11 @@ def _scenario_id(scenario):
     ids=[_scenario_id(s) for s in FILE_STRUCTURE_SCENARIOS],
 )
 def test_file_structure_validation(scenario, rules, test_logger):
+    # Epic must be set via allure.dynamic here, not the @allure.epic(...)
+    # decorator — a decorator is evaluated once for the whole parametrized
+    # function and can't vary per scenario/message type; dynamic.epic can.
+    allure.dynamic.epic(f"{ACTIVE_MESSAGE_TYPE.message_type} Validation")
+
     if scenario.is_edge_case:
         story = "Edge Cases"
     elif scenario.expected_valid:
