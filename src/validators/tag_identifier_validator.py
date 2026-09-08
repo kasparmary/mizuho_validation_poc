@@ -27,6 +27,7 @@ def check(extracted_tags: List[ExtractedTag], rules: dict, logger: logging.Logge
     logger = logger or logging.getLogger(__name__)
 
     known_canonical_tags = {t["tag"] for t in rules["tags"]}
+    message_type = rules.get("message_type", "MT700")
     errors: List[str] = []
 
     seen_canonical = set()
@@ -41,7 +42,7 @@ def check(extracted_tags: List[ExtractedTag], rules: dict, logger: logging.Logge
 
         # --- Check 2: unknown tag ---
         if t.canonical_tag not in known_canonical_tags:
-            msg = f"Tag '{t.raw_tag}' (line {t.line_number}) is not a recognized MT700 field."
+            msg = f"Tag '{t.raw_tag}' (line {t.line_number}) is not a recognized {message_type} field."
             logger.error(msg)
             errors.append(msg)
 

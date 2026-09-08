@@ -3,7 +3,14 @@ Shared pytest fixtures.
 
 - `sys.path` setup so `from src...` / `from utils...` imports work regardless
   of where pytest is invoked from.
-- `rules` fixture: loads config/rules.json once per test session.
+- `rules` fixture: loads the ACTIVE message type's rules.json once per test
+  session — which rules.json that is comes from
+  utils.message_type_config.resolve_active_message_type() (MT_TARGET env
+  var, or config/message_types.json's "default").
+- `_warn_content_validator_coverage_gaps` fixture: session-scoped, autouse —
+  prints one warning per rules.json tag that has NVRs/codes but no `shape`
+  entry, at the start of every test run, for the active message type's
+  rules file. See content_validator.find_uncovered_tags_with_rules.
 - `test_logger` fixture: gives each test its own isolated logger. Only
   WARNING and ERROR records are ever captured — INFO/DEBUG "everything
   passed" noise (stage headers, per-tag pass confirmations, full extraction
@@ -28,6 +35,8 @@ PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.engine import load_rules  # noqa: E402
+from src.validators.content_validator import find_uncovered_tags_with_rules  # noqa: E402
+from utils.message_type_config import resolve_active_message_type  # noqa: E402
 
 LOG_DIR = PROJECT_ROOT / "reports" / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -77,7 +86,16 @@ def _build_html_evidence(records) -> str:
 
 @pytest.fixture(scope="session")
 def rules():
-    return load_rules(str(PROJECT_ROOT / "config" / "rules.json"))
+    active = resolve_active_message_type()
+    return load_rules(str(PROJECT_ROOT / active.rules_path))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _warn_content_validator_coverage_gaps():
+    active = resolve_active_message_type()
+    gap_warnings = find_uncovered_tags_with_rules(load_rules(str(PROJECT_ROOT / active.rules_path)))
+    for w in gap_warnings:
+        print(f"\n[COVERAGE WARNING] {w}")
 
 
 @pytest.fixture

@@ -1,0 +1,10 @@
+{
+  "default": "MT700",
+  "message_types": {
+    "MT700": {
+      "rules": "config/MT700/rules.json",
+      "data_dir": "data/MT700",
+      "scenarios": "data/MT700/expected_results.csv"
+    }
+  }
+}

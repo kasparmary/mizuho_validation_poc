@@ -10,8 +10,8 @@ any given message.
 
 Tags NOT recognized in rules.json (e.g. a tag from a different SWIFT message
 type) are excluded from `actual_order` entirely — tag_identifier_validator.py
-already diagnoses those clearly ("not a recognized MT700 field") and runs
-before this check. Without this exclusion, an unrecognized tag desyncs the
+already diagnoses those clearly ("not a recognized <message_type> field") and
+runs before this check. Without this exclusion, an unrecognized tag desyncs the
 position-by-position comparison below and produces a second, less accurate
 "out of sequence" error for the same root cause.
 """
@@ -27,6 +27,7 @@ def check(extracted_tags: List[ExtractedTag], rules: dict, logger: logging.Logge
     # Derive canonical order fresh from rules.json every run (never cached/hardcoded).
     canonical_order = [t["tag"] for t in sorted(rules["tags"], key=lambda t: t["field_no"])]
     known_canonical_tags = set(canonical_order)
+    message_type = rules.get("message_type", "MT700")
 
     actual_order = [t.canonical_tag for t in extracted_tags if t.canonical_tag in known_canonical_tags]
     present_set = set(actual_order)
@@ -44,7 +45,7 @@ def check(extracted_tags: List[ExtractedTag], rules: dict, logger: logging.Logge
         if expected_tag != actual_tag:
             error = (
                 f"Field out of sequence at position {i + 1}: expected '{expected_tag}' "
-                f"(per MT700 field No. order), found '{actual_tag}'."
+                f"(per {message_type} field No. order), found '{actual_tag}'."
             )
             logger.error(error)
             return ValidationResult(valid=False, errors=[error])

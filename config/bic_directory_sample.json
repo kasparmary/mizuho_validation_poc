@@ -1,0 +1,30 @@
+{
+  "_note": "Small, hand-picked illustrative BIC reference set — NOT a real or complete SWIFT BIC directory. This project has no live network/directory access, so this file exists solely to make error codes T27/T28/T29/T45/C05 independently testable locally (see content_validator.py's bic_directory_check). DEUTDEFF is a real, well-known bank BIC (Deutsche Bank, Frankfurt) already used elsewhere in this project's test data as an example valid BIC; its branch/status fields below are illustrative for local testing only, not a verified statement about its real-world SWIFT registration. Every other entry is entirely fictional, chosen to be clearly non-real (no resemblance to any actual institution intended).",
+  "institutions": {
+    "DEUTDEFF": {
+      "category": "financial_institution",
+      "status": "live",
+      "valid_branch_codes": ["500", "XXX"]
+    },
+    "FAKEUS33": {
+      "category": "financial_institution",
+      "status": "live",
+      "valid_branch_codes": ["XXX"]
+    },
+    "TRNGGB2L": {
+      "category": "financial_institution",
+      "status": "test_training",
+      "valid_branch_codes": ["XXX"]
+    },
+    "SUSPFR2A": {
+      "category": "financial_institution",
+      "status": "suspended",
+      "valid_branch_codes": ["XXX"]
+    },
+    "CORPUS55": {
+      "category": "non_financial",
+      "status": "live",
+      "valid_branch_codes": ["XXX"]
+    }
+  }
+}

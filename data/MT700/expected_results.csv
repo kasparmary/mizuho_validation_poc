@@ -1,0 +1,143 @@
+test_id,file_name,scenario,expected_valid,expected_error_substring,is_edge_case
+TC001,baseline_sample_header_data.txt,All 11 mandatory tags present,True,,False
+TC002,baseline_sample_header_data.txt,Tags appear in canonical field_no order,True,,False
+TC003,baseline_sample_header_data.txt,No tag repeats within the file,True,,False
+TC004,missing_32B.txt,Mandatory tag 32B removed,False,32B,False
+TC005,missing_40A_and_32B.txt,Two mandatory tags removed simultaneously,False,40A,False
+TC006,swapped_20_40A.txt,20 and 40A appear out of canonical order,False,sequence,False
+TC007,duplicate_20.txt,Tag 20 appears twice,False,duplicate,False
+TC008,unknown_tag_99Z.txt,Unrecognized tag 99Z inserted,False,not a recognized MT700 field,False
+TC009,out_of_order_71D.txt,71D placed before 32B (out of canonical order),False,sequence,False
+TC010,empty_file.txt,Completely empty input file,False,Mandatory tag,True
+TC011,mandatory_only.txt,"Only mandatory tags present, all optional omitted",True,,True
+TC012,empty_49_value.txt,Mandatory tag 49 present but with an empty value,False,49,True
+TC013,trailing_blank_line.txt,Trailing blank line after the last tag,True,,True
+TC014,lowercase_41a.txt,Tag written in lowercase (41a instead of 41A),False,uppercase,True
+TC015,baseline_sample_header_data.txt,Tag 27 baseline value from sample file,True,,False
+TC016,tag27_number_not_one.txt,Tag 27 Number is not the fixed value 1,False,T75,False
+TC017,tag27_total_out_of_range.txt,Tag 27 Total exceeds allowed range,False,T75,True
+TC018,tag27_number_length_violation.txt,Tag 27 Number subfield exceeds fixed length,False,27,True
+TC019,baseline_sample_header_data.txt,Tag 40A baseline value from sample file,True,,False
+TC020,tag40A_transferable.txt,Tag 40A second allowed enum value,True,,False
+TC021,tag40A_invalid_code.txt,Tag 40A value outside the 2-code enum,False,T60,False
+TC022,tag40A_lowercase_code.txt,Tag 40A case mismatch on an otherwise valid code,False,T60,True
+TC023,baseline_sample_header_data.txt,Tag 20 baseline value from sample file,True,,False
+TC024,tag20_leading_slash.txt,Tag 20 starts with a slash,False,T26,True
+TC025,tag20_trailing_slash.txt,Tag 20 ends with a slash,False,T26,True
+TC026,tag20_double_slash.txt,Tag 20 contains consecutive slashes,False,T26,True
+TC027,tag20_max_length_boundary.txt,Tag 20 exactly at the max-length boundary (16 chars),True,,True
+TC028,tag20_exceeds_max_length.txt,Tag 20 one character past the max-length boundary (17 chars),False,20,True
+TC029,baseline_sample_header_data.txt,Tag 31C baseline value from sample file,True,,False
+TC030,tag31C_invalid_date.txt,Tag 31C 30-Feb does not exist on any calendar,False,T50,True
+TC031,baseline_sample_header_data.txt,"Tag 40E baseline value from sample file, no narrative",True,,False
+TC032,tag40E_narrative_on_non_othr.txt,Tag 40E narrative present on a non-OTHR code,False,D81,False
+TC033,tag40E_wrong_code.txt,"Tag 40E plausible but incorrect code, confusable with a real ICC publication",False,T59,True
+TC034,tag40E_narrative_exceeds_35_chars.txt,Tag 40E narrative exceeds the maximum 35-character limit,False,exceed,True
+TC035,tag40E_empty_narrative.txt,Tag 40E OTHR code has an empty narrative,False,ADVISORY,True
+TC036,tag40E_missing_narrative.txt,Tag 40E OTHR code has no narrative,False,ADVISORY,True
+TC037,baseline_sample_header_data.txt,Tag 44C baseline value from sample file,True,,False
+TC038,baseline_with_42C_and_42a.txt,Tag 42C valid narrative present,True,,False
+TC039,baseline_with_42C_and_42a.txt,Tag 42a Option A (BIC) value present,True,,False
+TC040,tag42a_free_text_option_d.txt,Tag 42a Option D (free-text Name and Address) accepted,True,,False
+TC041,baseline_with_44D_field.txt,Tag 44D valid narrative present,True,,False
+TC042,tag42C_exceeds_35_chars.txt,Tag 42C narrative line exceeds the 35-character limit,False,exceed,True
+TC043,tag42C_exceeds_3_lines.txt,Tag 42C narrative exceeds the 3-line maximum,False,exceed,True
+TC044,tag42a_party_identifier_present.txt,Tag 42a Party Identifier subfield present (forbidden by usage rule),False,Party Identifier,True
+TC045,tag42a_invalid_shape.txt,Tag 42a value matches neither BIC nor free-text shape,False,T27,False
+TC046,tag44C_invalid_date.txt,Tag 44C 30-Feb does not exist on any calendar,False,T50,False
+TC047,tag44D_exceeds_65_chars.txt,Tag 44D narrative line exceeds the 65-character limit,False,exceed,True
+TC048,tag44D_exceeds_6_lines.txt,Tag 44D narrative exceeds the 6-line maximum,False,exceed,True
+TC049,tag51a_bic_8char.txt,"Tag 51a Option A (BIC) value, 8 characters",True,,False
+TC050,tag51a_bic_11char.txt,"Tag 51a Option A (BIC) value with branch code, 11 characters",True,,True
+TC051,tag51a_free_text_multiline.txt,"Tag 51a Option D (free-text Name and Address), multi-line",True,,False
+TC052,tag51a_free_text_single_line.txt,Tag 51a Option D free text on a single line (no address lines),True,,True
+TC053,tag51a_party_identifier_present.txt,"Tag 51a Party Identifier subfield present (allowed, unlike 42a)",True,,True
+TC054,tag51a_invalid_shape.txt,Tag 51a value matches neither BIC nor free-text shape,False,T27,False
+TC055,tag51a_exceeds_4_lines.txt,Tag 51a Option D narrative exceeds the 4-line maximum,False,exceed,True
+TC056,tag51a_line_exceeds_35_chars.txt,Tag 51a single line exceeds the 35-character limit,False,exceed,True
+TC057,tag42C_missing_42a_partner.txt,Rule C1 violated: 42C present without its required 42a partner,False,C1,False
+TC058,tag42_group_and_42M_together.txt,Rule C2 violated: 42C+42a group present together with 42M,False,C2,False
+TC059,tag44C_and_44D_together.txt,Rule C3 violated: 44C and 44D both present,False,C3,False
+TC060,tag42M_alone.txt,"Rule C2 satisfied: 42M present alone (its own group, no conflict)",True,,False
+TC061,tag42M_valid.txt,Tag 42M valid narrative,True,,False
+TC062,tag42M_exceeds_35_chars.txt,Tag 42M line exceeds the 35-character limit,False,exceed,True
+TC063,tag42M_exceeds_4_lines.txt,Tag 42M exceeds the 4-line maximum,False,exceed,True
+TC064,tag42P_valid.txt,Tag 42P valid narrative,True,,False
+TC065,tag42P_exceeds_35_chars.txt,Tag 42P line exceeds the 35-character limit,False,exceed,True
+TC066,tag42P_exceeds_4_lines.txt,Tag 42P exceeds the 4-line maximum,False,exceed,True
+TC067,tag58a_bic.txt,Tag 58a Option A (BIC) value,True,,False
+TC068,tag58a_invalid_shape.txt,Tag 58a value matches neither BIC nor free-text shape,False,T27,False
+TC069,tag53a_bic.txt,Tag 53a Option A (BIC) value,True,,False
+TC070,tag53a_invalid_shape.txt,Tag 53a value matches neither BIC nor free-text shape,False,T27,False
+TC071,tag57a_bic.txt,Tag 57a Option A (BIC) value,True,,False
+TC072,tag57a_location_option_b.txt,"Tag 57a Option B bare Location value (no space, not BIC-shaped)",True,,True
+TC073,tag57a_free_text_option_d.txt,"Tag 57a Option D (free-text Name and Address), multi-line",True,,False
+TC074,tag57a_line_exceeds_35_chars.txt,Tag 57a single line exceeds the 35-character limit,False,exceed,True
+TC075,tag57a_exceeds_4_lines.txt,Tag 57a exceeds the 4-line maximum,False,exceed,True
+TC076,tag57a_party_identifier_present.txt,"Tag 57a Party Identifier subfield present (allowed, like 51a/58a/53a)",True,,True
+TC077,tag41a_multiline_option_d.txt,Tag 41a Option D Name/Address spanning 2 lines + Code (3 lines total) — previously wrongly rejected as 'expected two lines',True,,True
+TC078,tag32B_amount_exceeds_15_chars.txt,"Tag 32B amount exceeds the 15-character maximum (3!a15d, comma included)",False,exceeds the maximum length of 15,True
+TC079,tag40E_code_exceeds_30_chars.txt,Tag 40E code exceeds the 30-character maximum (30x[/35x]),False,exceeds the maximum length of 30,True
+TC080,tag51a_party_identifier_wrong_length.txt,"Tag 51a Party Identifier first subfield is 7 chars, not exactly 1!a — previously silently stripped and accepted",False,first subfield,True
+TC081,tag58a_party_identifier_account_too_long.txt,Tag 58a Party Identifier second subfield exceeds 34x — previously silently stripped and accepted,False,second subfield,True
+TC082,pretag_garbage_content.txt,Stray content before the first recognized tag — previously silently dropped,False,before the first recognized tag,True
+TC083,midmessage_blank_line.txt,Blank line between two tags (not trailing) — previously silently skipped,False,between tags,True
+TC084,tag49_may_add_without_58a.txt,Rule U1 violated: 49=MAY ADD but 58a absent — previously undetected compliance gap,False,U1,False
+TC085,tag49_confirm_with_58a.txt,Rule U1 satisfied: 49=CONFIRM with 58a present,True,,False
+TC086,tag32B_brl_currency.txt,"Tag 32B currency BRL — previously unrecognized, now covered by the full ISO 4217 table",True,,True
+TC087,baseline_sample_header_data.txt,Tag 43P baseline value from sample file,True,,False
+TC088,baseline_sample_header_data.txt,Tag 43T baseline value from sample file,True,,False
+TC089,baseline_sample_header_data.txt,Tag 45A baseline value from sample file,True,,False
+TC090,baseline_sample_header_data.txt,Tag 46A baseline value from sample file,True,,False
+TC091,baseline_sample_header_data.txt,Tag 47A baseline value from sample file,True,,False
+TC092,baseline_sample_header_data.txt,"Tag 71D baseline value from sample file, plain narrative with no structured code line",True,,False
+TC093,baseline_sample_header_data.txt,"Tag 48 baseline value from sample file, Days only, no optional Narrative",True,,False
+TC094,tag23_valid.txt,Tag 23 valid value at the exact 16-char maximum,True,,True
+TC095,tag23_exceeds_16_chars.txt,Tag 23 exceeds the 16-char maximum,False,exceeds the maximum length of 16,True
+TC096,tag39A_valid.txt,Tag 39A valid Tolerance 1/Tolerance 2 (2n/2n),True,,False
+TC097,tag39A_tolerance_exceeds_2_digits.txt,Tag 39A Tolerance exceeds the 2-digit maximum,False,must be 1 to 2 numeric digit,True
+TC098,tag39A_missing_separator.txt,Tag 39A missing the '/' separator between Tolerance 1 and Tolerance 2,False,separated by '/',False
+TC099,tag39C_valid.txt,Tag 39C valid narrative,True,,False
+TC100,tag39C_line_exceeds_35_chars.txt,Tag 39C line exceeds the 35-char maximum (boundary 36),False,exceeds 35 characters,True
+TC101,tag43P_invalid_code.txt,Tag 43P invalid code (not ALLOWED/CONDITIONAL/NOT ALLOWED),False,T64,False
+TC102,tag43T_invalid_code.txt,Tag 43T invalid code (not ALLOWED/CONDITIONAL/NOT ALLOWED),False,T65,False
+TC103,tag44A_valid.txt,Tag 44A valid place-of-taking-in-charge value,True,,False
+TC104,tag44A_exceeds_140_chars.txt,Tag 44A exceeds the 140-char maximum (boundary 141),False,exceeds the maximum length of 140,True
+TC105,tag44E_valid.txt,Tag 44E valid port-of-loading value,True,,False
+TC106,tag44F_valid.txt,Tag 44F valid port-of-discharge value,True,,False
+TC107,tag44B_valid.txt,Tag 44B valid place-of-final-destination value,True,,False
+TC108,tag45A_line_exceeds_65_chars.txt,Tag 45A line exceeds the 65-char maximum (boundary 66),False,exceeds 65 characters,True
+TC109,tag46A_exceeds_100_lines.txt,Tag 46A exceeds the 100-line maximum (boundary 101 lines),False,exceeds the 100-line maximum,True
+TC110,tag49G_valid.txt,"Tag 49G valid value — rules.json entry is unverified, logs a warning but still validates",True,,True
+TC111,tag48_with_narrative.txt,Tag 48 Days + optional Narrative both present,True,,False
+TC112,tag48_narrative_exceeds_35_chars.txt,Tag 48 Narrative exceeds the 35-char maximum (boundary 36),False,exceeds the maximum length of 35,True
+TC113,tag48_days_exceeds_3_digits.txt,Tag 48 Days exceeds the 3-digit maximum,False,must be 1 to 3 numeric digit,True
+TC114,tag71D_code_currency_amount.txt,Tag 71D structured Code+Currency+Amount line,True,,True
+TC115,tag71D_code_amount_and_narrative.txt,"Tag 71D Code+Currency+Amount followed by narrative on the next line (narrative last, valid order)",True,,True
+TC116,tag71D_invalid_code.txt,Tag 71D code not in the allowed charges code list,False,not one of the allowed codes,False
+TC117,tag71D_code_after_narrative.txt,Tag 71D code line following narrative text — violates 'narrative must be last',False,must not follow narrative text,True
+TC118,tag72Z_plain_narrative.txt,Tag 72Z plain narrative (no structured code),True,,False
+TC119,tag72Z_code.txt,Tag 72Z structured Code line (PHONBEN),True,,True
+TC120,tag72Z_invalid_code.txt,Tag 72Z code not in the allowed PHONBEN/TELEBEN list,False,not one of the allowed codes,False
+TC121,tag78_valid.txt,Tag 78 valid instruction value,True,,False
+TC122,tag78_exceeds_12_lines.txt,Tag 78 exceeds the 12-line maximum (boundary 13 lines),False,exceeds the 12-line maximum,True
+TC123,tag32B_lowercase_currency.txt,Tag 32B currency code is lowercase (not 3!a uppercase alpha),False,is not a valid 3!a currency code,True
+TC124,tag32B_nonalpha_currency.txt,Tag 32B currency code contains a non-alpha character,False,is not a valid 3!a currency code,True
+TC125,tag32B_unrecognized_currency.txt,Tag 32B currency code is well-formed but not a recognized ISO 4217 code,False,not a recognized ISO 4217 code,True
+TC126,tag32B_missing_comma.txt,Tag 32B amount is missing the mandatory decimal comma,False,missing the mandatory decimal comma,True
+TC127,tag32B_nondigit_integer.txt,Tag 32B amount has a non-numeric integer part before the comma,False,must have at least one digit before the comma,True
+TC128,tag32B_nondigit_decimal.txt,Tag 32B amount has a non-numeric decimal part,False,has a non-numeric decimal part,True
+TC129,tag32B_jpy_precision_exceeded.txt,Tag 32B JPY amount has 2 decimal digits but JPY allows 0,False,exceeds JPY's allowed precision,True
+TC130,tag59_account_prefix.txt,Tag 59 Beneficiary with optional Account prefix present,True,,True
+TC131,tag59_account_exceeds_34_chars.txt,Tag 59 Account subfield exceeds the 34-char maximum,False,account subfield,True
+TC132,tag59_exceeds_4_lines.txt,Tag 59 Name and Address exceeds the 4-line maximum,False,exceeds the 4-line maximum,True
+TC133,tag59_line_exceeds_35_chars.txt,Tag 59 Name and Address line exceeds the 35-char maximum,False,exceeds 35 characters,True
+TC134,tag41a_missing_code_line.txt,Tag 41a Option D with no trailing Code line (only 1 line present),False,expected at least two lines,True
+TC135,tag71D_continuation.txt,"Tag 71D code+amount line followed by a '//' continuation line (valid, no narrative)",True,,True
+TC136,tag71D_continuation_after_narrative.txt,Tag 71D '//' continuation line following narrative text — violates 'narrative must be last',False,must not follow narrative text,True
+TC137,tag72Z_continuation.txt,"Tag 72Z code line followed by a '//' continuation line (valid, no narrative)",True,,True
+TC138,tag51a_bic_directory_t27.txt,Tag 51a BIC core not recognized in the local BIC reference (T27 — completely unknown/fabricated BIC),False,T27,True
+TC139,tag51a_bic_directory_t28.txt,"Tag 51a BIC has a recognized institution core, but the branch code is not registered for that institution (T28)",False,T28,True
+TC140,tag51a_bic_directory_t29.txt,Tag 51a BIC is registered but is a Test & Training destination rather than live (T29),False,T29,True
+TC141,tag51a_bic_directory_t45.txt,Tag 51a BIC fails general registration validation via a suspended status — this project's chosen concrete instance of T45's catch-all category,False,T45,True
+TC142,tag51a_bic_directory_c05.txt,Tag 51a BIC is registered but as a non-financial-institution entity (C05),False,C05,True
